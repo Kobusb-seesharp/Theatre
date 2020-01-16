@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "CreateBooking";
+    string item = string.Empty;
+    List<SelectListItem> listItems = new List<SelectListItem>();
+    for(int i = 1; i <= ViewBag.BookingsAvailable; i++)
+    {
+        listItems.Add(new SelectListItem() { Text = i.ToString(), Value = i.ToString()});
+    }
+
+}
+<br />
+<div class="container">
+    <div id="alertRow" class="row" style="display:none;">
+        <div class="col-md-12">
+            <div class="alert alert-danger">
+                <strong>Error!</strong> <div id="innerAlert"></div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4">
+            <div class="row">
+                <div class="col-md-6">
+                    Booking Date:
+                </div>
+                <div class="col-md-6">
+                    @ViewBag.BookingDate
+                </div>
+                <div class="col-md-6">
+                    Name:
+                </div>
+                <div class="col-md-6">
+                    <input id="idName" type="text" placeholder="Insert Name" />
+                </div>
+                <div class="col-md-6">
+                    Email:
+                </div>
+                <div class="col-md-6">
+                    <input id="idEmail" type="email" placeholder="Insert Email" />
+                </div>
+                <div class="col-md-6">
+                    Quantity:
+                </div>
+                <div class="col-md-6">
+                    @Html.DropDownList("Quantity", listItems);
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 p-10">
+            <div class="btn btn-primary btn-lg" onclick="book()">Book</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function book() {
+        const alertDiv = document.getElementById("alertRow");
+        const alertInnerDiv = document.getElementById("innerAlert");
+        const nameDiv = document.getElementById("idName");
+        const emailDiv = document.getElementById("idEmail");
+        HideAlert(alertDiv, alertInnerDiv);
+        if (nameDiv && emailDiv) {
+            if (checkValidEmail(emailDiv.value)) {
+                if (nameDiv.value) {
+
+                }
+                else ShowAlert(alertDiv, alertInnerDiv, 'Please enter name!');
+            }
+            else ShowAlert(alertDiv, alertInnerDiv, 'Email not valid!');
+        }
+        else ShowAlert(alertDiv, alertInnerDiv, 'Name/Email control not found!');
+     }
+
+    function checkValidEmail(value) {
+        var validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        return validEmail.test(value);
+        }
+
+    function checkAvail() {
+
+    }
+
+    function ShowAlert(control, inner, msg) {
+        if (control.style.display === "none") {
+            control.style.display = "block";
+        }
+        inner.innerHTML = msg;
+    }
+
+    function HideAlert(control, inner) {
+        if (control.style.display === "block") {
+            control.style.display = "none";
+        }
+        inner.innerHTML = "";
+    }
+</script>
+

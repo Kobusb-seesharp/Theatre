@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<br />
+<br />
+<div class=" container text-center">
+    <div id="alertRow" class="row" style="display:none;">
+        <div class="col-md-12">
+            <div class="alert alert-danger">
+                <strong>Error!</strong> <div id="innerAlert"></div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <label>Please enter date of booking - </label>
+            <input id="dateControl" type="text" style="width:200px" placeholder=" Ex. 2020/01/15" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 p-10">
+            <div class="btn btn-primary btn-lg" onclick="checkNext()">Next</div>
+        </div>
+    </div>
+    <hr />
+</div>
+
+<script>
+    function checkNext() {
+        const alertDiv = document.getElementById("alertRow");
+        const alertInnerDiv = document.getElementById("innerAlert");
+        const dateCont = document.getElementById("dateControl");
+        if (dateCont) {
+            HideAlert(alertDiv, alertInnerDiv);
+            let dateValue = document.getElementById("dateControl").value;
+            if (dateValue) {
+                if (ValidDate(dateValue)) {
+                    if (Date.parse(dateValue) - Date.parse(new Date()) > 0) {
+                        $.ajax({
+                            url: '@Url.Action("BookingsAvailable","Home")',
+                            data: { date: dateValue },
+                            success: function (data) {
+                                if (data) {
+                                    window.location.href = "@Url.Action("CreateBooking", "Home")";
+                                }
+                                else ShowAlert(alertDiv, alertInnerDiv, 'No bookings available for date!');
+                            },
+                            error: function (xhr) {
+                                alert(xhr.responseText);
+                            }
+                        });
+                    }
+                    else {
+                        ShowAlert(alertDiv, alertInnerDiv, 'Please input date that has not passed yet!');
+                    }
+                }
+                else ShowAlert(alertDiv, alertInnerDiv, 'Please make sure date is in valid format YYY/MM/DD!');
+            }
+            else ShowAlert(alertDiv, alertInnerDiv, 'Please input a date!');
+        }
+        else ShowAlert(alertDiv, alertInnerDiv, 'Date control not found!');
+    }
+
+    function ValidDate(value) {
+        const validDate = /^[0-9]{4}(-|\/)(0[1-9]|1[0-2])(-|\/)(0[1-9]|[1-2][0-9]|3[0-1])$/;
+        return validDate.test(value);
+    }
+
+    function ShowAlert(control, inner, msg) {
+        if (control.style.display === "none") {
+            control.style.display = "block";
+        }
+        inner.innerHTML = msg;
+    }
+
+    function HideAlert(control, inner) {
+        if (control.style.display === "block") {
+            control.style.display = "none";
+        }
+        inner.innerHTML = "";
+    }
+</script>
